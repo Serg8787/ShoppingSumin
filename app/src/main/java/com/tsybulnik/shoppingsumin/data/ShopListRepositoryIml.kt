@@ -6,9 +6,18 @@ import com.tsybulnik.shoppingsumin.domain.ShopListRepository
 // по сути синглотон
 object ShopListRepositoryIml : ShopListRepository {
 
+
+
     private val shopList = mutableListOf<ShopItem>()
 
     private var autoIncrementID = 0
+
+    init {
+        for(i in 0..10){
+            val item = ShopItem(name = "Name $i",i, true)
+            addShopItem(item)
+        }
+    }
 
     override fun addShopItem(shopItem: ShopItem) {
         if (shopItem.id == ShopItem.UNDEFINED_ID) {
