@@ -1,7 +1,8 @@
-package com.tsybulnik.shoppingsumin
+package com.tsybulnik.shoppingsumin.presentation
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.tsybulnik.shoppingsumin.R
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
