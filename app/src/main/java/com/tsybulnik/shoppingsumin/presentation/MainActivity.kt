@@ -11,6 +11,7 @@ import com.tsybulnik.shoppingsumin.R
 class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: MainViewModel
     private lateinit var tx: TextView
+    private var count= 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -21,7 +22,13 @@ class MainActivity : AppCompatActivity() {
           tx.text = it.toString()
             Log.d("TAG1","mistake")
             Log.d("TAG1",it.toString())
+            val item = it[0]
+            if (count==0){
+                count++
+                viewModel.changeEnabledState(item)
+            }
+
         }
-        viewModel.getShopList()
+
     }
 }
