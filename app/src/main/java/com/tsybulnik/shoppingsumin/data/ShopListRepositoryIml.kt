@@ -4,6 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.tsybulnik.shoppingsumin.domain.ShopItem
 import com.tsybulnik.shoppingsumin.domain.ShopListRepository
+import java.util.*
+import kotlin.random.Random
+import kotlin.random.Random.Default.nextBoolean
 
 // по сути синглотон
 object ShopListRepositoryIml : ShopListRepository {
@@ -15,8 +18,8 @@ object ShopListRepositoryIml : ShopListRepository {
     private var autoIncrementID = 0
 
     init {
-        for(i in 0..10){
-            val item = ShopItem(name = "Name $i",i, true)
+        for(i in 0..100){
+            val item = ShopItem(name = "Name $i",i, Random.nextBoolean())
             addShopItem(item)
         }
     }
