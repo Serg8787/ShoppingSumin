@@ -18,6 +18,8 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
         }
 
     private var count = 0
+    var onShopItemLongClickListener: ((ShopItem) -> Unit)? = null
+    var onShopItemClickListener: ((ShopItem) -> Unit)? = null
 
 
     class ShopItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -28,18 +30,25 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShopItemViewHolder {
         Log.d("MyLog", "OncreateViewHolder ${++count}")
 
-        val layout = when(viewType){
+        val layout = when (viewType) {
             VIEW_TYPE_ENABLED -> R.layout.item_shop_enabled
             VIEW_TYPE_DISEBLAD -> R.layout.item_shop_disabled
             else -> throw RuntimeException("New item layout + $viewType")
         }
-        val view = LayoutInflater.from(parent.context).inflate(layout,parent,false)
+        val view = LayoutInflater.from(parent.context).inflate(layout, parent, false)
         return ShopItemViewHolder(view)
 
     }
 
     override fun onBindViewHolder(holder: ShopItemViewHolder, position: Int) {
         val shopItem = shopList[position]
+        holder.itemView.setOnLongClickListener {
+            onShopItemLongClickListener?.invoke(shopItem)
+            true
+        }
+        holder.itemView.setOnClickListener{
+            onShopItemClickListener?.invoke(shopItem)
+        }
         holder.tvName.text = shopItem.name
         holder.tvCount.text = shopItem.count.toString()
     }
@@ -51,15 +60,15 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
 
     override fun getItemViewType(position: Int): Int {
         val item = shopList[position]
-        if (item.enabled){
+        if (item.enabled) {
             return VIEW_TYPE_ENABLED
         } else {
             return VIEW_TYPE_DISEBLAD
         }
-        return super.getItemViewType(position)
     }
 
-    companion object{
+
+    companion object {
         const val VIEW_TYPE_ENABLED = 1
         const val VIEW_TYPE_DISEBLAD = 2
         const val MAX_PULL_SIZE = 15
