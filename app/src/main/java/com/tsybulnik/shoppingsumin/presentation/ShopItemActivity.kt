@@ -26,7 +26,7 @@ class ShopItemActivity : AppCompatActivity() {
 
     private fun launchMode() {
         val fragment = when (screenMode) {
-            MODE_EDIT -> ShopItemFragment.newInstanceEditItem(shopItemID)
+            MODE_EDIT -> ShopItemFragment.newInstanceEditItem()
             MODE_ADD  -> ShopItemFragment.newInstanceAddItem()
             else      -> throw RuntimeException("Unknown screen mode $screenMode")
         }
@@ -38,7 +38,7 @@ class ShopItemActivity : AppCompatActivity() {
     private fun parseIntent() {
         if (!intent.hasExtra(EXTRA_SCREEN_MODE)) {
             throw RuntimeException("Param screen mode is absent")
-            throw RuntimeException("Param screen mode is absent")
+
         }
         val mode = intent.getStringExtra(EXTRA_SCREEN_MODE)
         if (mode != MODE_EDIT && mode != MODE_ADD) {
