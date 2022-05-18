@@ -3,6 +3,8 @@ package com.tsybulnik.shoppingsumin.presentation
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
@@ -31,21 +33,86 @@ class ShopItemActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
 
         initViews()
-        when(screenMode){
+        addTextChangeListeners()
+        launchRightMode()
+
+
+
+
+        viewModel.errorInputCount.observe(this) {
+            val message = if (it) {
+                getString(R.string.error_input_count)
+            } else {
+                null
+            }
+            tilCount.error = message
+        }
+        viewModel.errorInputName.observe(this){
+            val message = if(it){
+                getString(R.string.error_input_name)
+            } else {
+                null
+            }
+            tilName.error = message
+        }
+
+        viewModel.shouldCloseScreen.observe(this){
+            finish()
+        }
+
+    }
+
+    private fun addTextChangeListeners() {
+        etName.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                viewModel.resetErrorInputName()
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+            }
+        })
+        etCount.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                viewModel.resetErrorInputCount()
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+
+            }
+        })
+    }
+
+    private fun launchRightMode(){
+        when (screenMode) {
             MODE_EDIT -> launchEditMode()
             MODE_ADD -> launchAddMode()
 
         }
+    }
 
+    private fun launchEditMode() {
+        viewModel.getShopItem(shopItemID)
+        viewModel.shopItem.observe(this) {
+            etName.setText(it.name)
+            etCount.setText(it.count.toString())
 
-
-
+        }
+        btSave.setOnClickListener {
+            viewModel.editShopItem(etName.text?.toString(), etCount.text?.toString())
+        }
 
     }
-    private fun launchEditMode(){
 
-    }
-    private fun launchAddMode(){
+    private fun launchAddMode() {
+
+        viewModel.addShopItem(etName.text?.toString(), etCount.text?.toString())
 
     }
 
@@ -54,7 +121,7 @@ class ShopItemActivity : AppCompatActivity() {
         tilCount = findViewById(R.id.til_count)
         etName = findViewById(R.id.et_name)
         etCount = findViewById(R.id.et_count)
-        btSave = findViewById(R.id.button_add_shop_item)
+        btSave = findViewById(R.id.bt_save)
     }
 
     private fun parseIntent() {
