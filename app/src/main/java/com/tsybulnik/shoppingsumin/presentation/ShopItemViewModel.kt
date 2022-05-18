@@ -18,7 +18,7 @@ class ShopItemViewModel() : ViewModel() {
     private val addShopItemUseCase = AddShopItemUseCase(repository)
 
     private val _errorInputName = MutableLiveData<Boolean>()
-    val errorInputname: LiveData<Boolean>
+    val errorInputName: LiveData<Boolean>
         get() = _errorInputName
 
     private val _errorInputCount = MutableLiveData<Boolean>()
@@ -91,12 +91,12 @@ class ShopItemViewModel() : ViewModel() {
         return result
     }
 
-    public fun resetErrorInputName() {
+    fun resetErrorInputName() {
         _errorInputName.value = false
 
     }
 
-    public fun resetErrorInputCount() {
+     fun resetErrorInputCount() {
         _errorInputCount.value = false
 
     }
