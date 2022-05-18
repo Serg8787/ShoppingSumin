@@ -1,5 +1,6 @@
 package com.tsybulnik.shoppingsumin.presentation
 
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -25,6 +26,18 @@ class ShopItemFragment : Fragment() {
 
     private var screenMode: String = MODE_UNKNOWN
     private var shopItemId: Int = ShopItem.UNDEFINED_ID
+
+    private lateinit var editingFInishListener: OnEditingFInishListener
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is OnEditingFInishListener) {
+            editingFInishListener = context
+        } else {
+            throw java.lang.RuntimeException("Activity must implement editingFInishListener")
+        }
+
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,14 +79,14 @@ class ShopItemFragment : Fragment() {
             tilName.error = message
         }
         viewModel.shouldCloseScreen.observe(viewLifecycleOwner) {
-            activity?.onBackPressed()
+            editingFInishListener.onEditingFinish()
         }
     }
 
     private fun launchRightMode() {
         when (screenMode) {
             MODE_EDIT -> launchEditMode()
-            MODE_ADD  -> launchAddMode()
+            MODE_ADD -> launchAddMode()
         }
     }
 
@@ -143,6 +156,10 @@ class ShopItemFragment : Fragment() {
         etName = view.findViewById(R.id.et_name)
         etCount = view.findViewById(R.id.et_count)
         buttonSave = view.findViewById(R.id.bt_save)
+    }
+
+    interface OnEditingFInishListener {
+        fun onEditingFinish()
     }
 
     companion object {

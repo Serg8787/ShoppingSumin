@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.tsybulnik.shoppingsumin.R
 import com.tsybulnik.shoppingsumin.domain.ShopItem
 
-class ShopItemActivity : AppCompatActivity() {
+class ShopItemActivity : AppCompatActivity(),ShopItemFragment.OnEditingFInishListener {
 
     private var screenMode = MODE_UNKNOWN
     private var shopItemID = ShopItem.UNDEFINED_ID
@@ -16,7 +16,10 @@ class ShopItemActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shop_item)
         parseIntent()
-        launchMode()
+        if (savedInstanceState==null){
+            launchMode()
+        }
+
     }
 
     private fun launchMode() {
@@ -26,7 +29,7 @@ class ShopItemActivity : AppCompatActivity() {
             else      -> throw RuntimeException("Unknown screen mode $screenMode")
         }
         supportFragmentManager.beginTransaction()
-            .add(R.id.shopItemContainer, fragment)
+            .replace(R.id.shopItemContainer, fragment)
             .commit()
     }
 
@@ -68,5 +71,9 @@ class ShopItemActivity : AppCompatActivity() {
             intent.putExtra(EXTRA_SHOP_ITEM_ID, shopItemId)
             return intent
         }
+    }
+
+    override fun onEditingFinish() {
+        finish()
     }
 }
