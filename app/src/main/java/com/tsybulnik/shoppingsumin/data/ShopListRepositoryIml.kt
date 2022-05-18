@@ -1,20 +1,25 @@
 package com.tsybulnik.shoppingsumin.data
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.tsybulnik.shoppingsumin.domain.ShopItem
 import com.tsybulnik.shoppingsumin.domain.ShopListRepository
+import java.util.*
+import kotlin.random.Random
+import kotlin.random.Random.Default.nextBoolean
 
 // по сути синглотон
 object ShopListRepositoryIml : ShopListRepository {
 
 
-
-    private val shopList = mutableListOf<ShopItem>()
-
+//Добавили sortedSetof - чтобы правильно сортировать shopitem
+    private val shopList = sortedSetOf<ShopItem>({ o1, o2 -> o1.id.compareTo(o2.id) })
+    private val shopListLD = MutableLiveData<List<ShopItem>>()
     private var autoIncrementID = 0
 
     init {
-        for(i in 0..10){
-            val item = ShopItem(name = "Name $i",i, true)
+        for(i in 0..100){
+            val item = ShopItem(name = "Name $i",i, Random.nextBoolean())
             addShopItem(item)
         }
     }
@@ -26,12 +31,14 @@ object ShopListRepositoryIml : ShopListRepository {
         }
 
         shopList.add(shopItem)
+        updateList()
     }
 
     override fun editShopItem(shopItem: ShopItem) {
         val oldElement = getShopItem(shopItem.id)
         shopList.remove(oldElement)
         addShopItem(shopItem)
+
     }
 
     override fun getShopItem(shopItemId: Int): ShopItem {
@@ -39,13 +46,18 @@ object ShopListRepositoryIml : ShopListRepository {
             ?: throw RuntimeException("Element with id $shopItemId not found")
     }
 
-    override fun getShopList(): List<ShopItem> {
+    override fun getShopList(): LiveData<List<ShopItem>> {
         // toList - для копии объекта
-        return shopList.toList()
+        return shopListLD
 
     }
 
     override fun deleteShopItem(shopItem: ShopItem) {
         shopList.remove(shopItem)
+        updateList()
+    }
+
+    private fun updateList(){
+        shopListLD.value = shopList.toList()
     }
 }
