@@ -1,13 +1,16 @@
 package com.tsybulnik.shoppingsumin.presentation
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.*
 import com.tsybulnik.shoppingsumin.data.ShopListRepositoryIml
 import com.tsybulnik.shoppingsumin.domain.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 
-class MainViewModel : ViewModel(){
-    private val repository = ShopListRepositoryIml
+class MainViewModel(application: Application) : AndroidViewModel(application){
+    private val repository = ShopListRepositoryIml(application)
 
     private val getShopListUseCase = GetShopListUseCase(repository)
     private val deleteShopItemUseCase = DeleteShopItemUseCase(repository)
@@ -15,17 +18,15 @@ class MainViewModel : ViewModel(){
 
     val shopList = getShopListUseCase.getShopLIst()
 
-
     fun deleteShopItem(shopItem: ShopItem){
-        deleteShopItemUseCase.deleteShopItem(shopItem)
-
+        viewModelScope.launch {
+            deleteShopItemUseCase.deleteShopItem(shopItem)
+        }
     }
     fun changeEnabledState(shopItem: ShopItem){
-        val newItem = shopItem.copy(enabled = !shopItem.enabled)
-        editShopItemUseCase.editShopItem(newItem)
-
-
+        viewModelScope.launch {
+            val newItem = shopItem.copy(enabled = !shopItem.enabled)
+            editShopItemUseCase.editShopItem(newItem)
+        }
     }
-
-
 }
