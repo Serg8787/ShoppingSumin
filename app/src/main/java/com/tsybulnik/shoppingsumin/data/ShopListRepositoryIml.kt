@@ -1,60 +1,42 @@
 package com.tsybulnik.shoppingsumin.data
 
+import android.app.Application
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.tsybulnik.shoppingsumin.domain.ShopItem
 import com.tsybulnik.shoppingsumin.domain.ShopListRepository
 import java.util.*
-import kotlin.random.Random
-import kotlin.random.Random.Default.nextBoolean
 
-// по сути синглотон
-object ShopListRepositoryIml : ShopListRepository {
+class ShopListRepositoryIml(
+    application: Application
+) : ShopListRepository {
+
+    private val shopListDao = AppDatabase.getInstance(application).shopListDAO()
+    private val mapper = ShopListMapper()
 
 
-//Добавили sortedSetof - чтобы правильно сортировать shopitem
-    private val shopList = sortedSetOf<ShopItem>({ o1, o2 -> o1.id.compareTo(o2.id) })
-    private val shopListLD = MutableLiveData<List<ShopItem>>()
-    private var autoIncrementID = 0
-
-    init {
-        for(i in 0..100){
-            val item = ShopItem(name = "Name $i",i, Random.nextBoolean())
-            addShopItem(item)
-        }
-    }
 
     override fun addShopItem(shopItem: ShopItem) {
-        if (shopItem.id == ShopItem.UNDEFINED_ID) {
-            shopItem.id = autoIncrementID
-            autoIncrementID++
-        }
-
-        shopList.add(shopItem)
-        updateList()
+       shopListDao.addShopItem(mapper.mapEntityToDBModel(shopItem))
     }
 
     override fun editShopItem(shopItem: ShopItem) {
-        val oldElement = getShopItem(shopItem.id)
-        shopList.remove(oldElement)
-        addShopItem(shopItem)
+        shopListDao.addShopItem(mapper.mapEntityToDBModel(shopItem))
 
     }
 
     override fun getShopItem(shopItemId: Int): ShopItem {
-        return shopList.find { it.id == shopItemId }
-            ?: throw RuntimeException("Element with id $shopItemId not found")
+        val dbModel = shopListDao.getShopItem(shopItemId)
+        return mapper.mapDBModelToEntity(dbModel)
     }
 
     override fun getShopList(): LiveData<List<ShopItem>> {
         // toList - для копии объекта
-        return shopListLD
+        return shopListDao.getShopList()
 
     }
 
     override fun deleteShopItem(shopItem: ShopItem) {
-        shopList.remove(shopItem)
-        updateList()
+      shopListDao.deleteShopItem(shopItem.id)
     }
 
     private fun updateList(){
