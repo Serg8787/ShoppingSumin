@@ -2,6 +2,7 @@ package com.tsybulnik.shoppingsumin.data
 
 import android.app.Application
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.Transformations
 import com.tsybulnik.shoppingsumin.domain.ShopItem
 import com.tsybulnik.shoppingsumin.domain.ShopListRepository
 import java.util.*
@@ -14,9 +15,8 @@ class ShopListRepositoryIml(
     private val mapper = ShopListMapper()
 
 
-
     override fun addShopItem(shopItem: ShopItem) {
-       shopListDao.addShopItem(mapper.mapEntityToDBModel(shopItem))
+        shopListDao.addShopItem(mapper.mapEntityToDBModel(shopItem))
     }
 
     override fun editShopItem(shopItem: ShopItem) {
@@ -29,17 +29,17 @@ class ShopListRepositoryIml(
         return mapper.mapDBModelToEntity(dbModel)
     }
 
-    override fun getShopList(): LiveData<List<ShopItem>> {
-        // toList - для копии объекта
-        return shopListDao.getShopList()
+    override fun getShopList(): LiveData<List<ShopItem>> =
+        Transformations.map(shopListDao.getShopList()) {
+            mapper.mapListDbModelToListEntity(it)
+        }
 
-    }
 
     override fun deleteShopItem(shopItem: ShopItem) {
-      shopListDao.deleteShopItem(shopItem.id)
+        shopListDao.deleteShopItem(shopItem.id)
     }
 
-    private fun updateList(){
+    private fun updateList() {
         shopListLD.value = shopList.toList()
     }
 }
