@@ -1,8 +1,9 @@
 package com.tsybulnik.shoppingsumin.data
 
 import com.tsybulnik.shoppingsumin.domain.ShopItem
+import javax.inject.Inject
 
-class ShopListMapper {
+class ShopListMapper @Inject constructor() {
 
     fun mapEntityToDBModel(shopItem: ShopItem):ShopItemDbModel = ShopItemDbModel(id = shopItem.id,
     name = shopItem.name,

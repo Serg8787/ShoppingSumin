@@ -6,13 +6,14 @@ import androidx.lifecycle.Transformations
 import com.tsybulnik.shoppingsumin.domain.ShopItem
 import com.tsybulnik.shoppingsumin.domain.ShopListRepository
 import java.util.*
+import javax.inject.Inject
 
-class ShopListRepositoryIml(
-    application: Application
+class ShopListRepositoryIml @Inject constructor(
+    private val shopListDao: ShopListDAO,
+    private val mapper: ShopListMapper
 ) : ShopListRepository {
 
-    private val shopListDao = AppDatabase.getInstance(application).shopListDAO()
-    private val mapper = ShopListMapper()
+
 
 
     override suspend fun addShopItem(shopItem: ShopItem) {

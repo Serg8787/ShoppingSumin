@@ -10,17 +10,15 @@ import com.tsybulnik.shoppingsumin.domain.ShopItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ShopItemViewModel(application: Application) : AndroidViewModel(application) {
+class ShopItemViewModel @Inject constructor(
 
-    private val repository = ShopListRepositoryIml(application)
+    private val getShopItemUseCase :GetShopItemUseCase,
+            private val addShopItemUseCase : AddShopItemUseCase,
+    private val editShopItemUseCase : EditShopItemUseCase
 
-    private val getShopItemUseCase = GetShopItemUseCase(repository)
-    private val addShopItemUseCase = AddShopItemUseCase(repository)
-    private val editShopItemUseCase = EditShopItemUseCase(repository)
-
-
-
+) : ViewModel() {
     private val _errorInputName = MutableLiveData<Boolean>()
     val errorInputName: LiveData<Boolean>
         get() = _errorInputName
